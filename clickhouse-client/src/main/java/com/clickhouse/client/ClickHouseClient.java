@@ -39,6 +39,8 @@ import com.clickhouse.data.ClickHouseUtils;
 import com.clickhouse.data.ClickHouseValue;
 import com.clickhouse.data.ClickHouseValues;
 import com.clickhouse.data.ClickHouseWriter;
+import com.clickhouse.logging.Logger;
+import com.clickhouse.logging.LoggerFactory;
 
 /**
  * A unified interface defines Java client for ClickHouse. A client can only
@@ -56,6 +58,7 @@ import com.clickhouse.data.ClickHouseWriter;
  */
 public interface ClickHouseClient extends AutoCloseable {
 
+    static final Logger log = LoggerFactory.getLogger(ClickHouseClient.class);
     /**
      * Returns a builder for creating a new client.
      *
@@ -956,7 +959,7 @@ public interface ClickHouseClient extends AutoCloseable {
                     .get(timeout, TimeUnit.MILLISECONDS)) {
                 return resp != null;
             } catch (Exception e) {
-                // ignore
+                log.error(e);
             }
         }
 
