@@ -957,6 +957,7 @@ public interface ClickHouseClient extends AutoCloseable {
                     .format(ClickHouseFormat.TabSeparated)
                     .query("SELECT 1 FORMAT TabSeparated").execute()
                     .get(timeout, TimeUnit.MILLISECONDS)) {
+                log.debug("resp [%s]", resp);
                 return resp != null;
             } catch (Exception e) {
                 log.error(e);

@@ -59,7 +59,7 @@ public class HttpUrlConnectionImpl extends ClickHouseHttpConnection {
         String displayName = getResponseHeader("X-ClickHouse-Server-Display-Name", server.getHost());
         String queryId = getResponseHeader("X-ClickHouse-Query-Id", "");
         String summary = getResponseHeader("X-ClickHouse-Summary", "{}");
-
+        log.debug("displayName:[%s] queryId:[%s] summary:[%s]", displayName, queryId, summary);
         ClickHouseConfig c = config;
         ClickHouseFormat format = c.getFormat();
         TimeZone timeZone = c.getServerTimeZone();
