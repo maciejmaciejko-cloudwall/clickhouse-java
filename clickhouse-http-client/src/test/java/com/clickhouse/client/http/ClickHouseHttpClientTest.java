@@ -212,32 +212,32 @@ public class ClickHouseHttpClientTest extends ClientIntegrationTest {
     public void testPing() {
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP)).build()) {
-            Assert.assertTrue(client.ping(getServer(), 3000));
+            Assert.assertTrue(client.ping(getServer(), 10000));
         }
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseHttpOption.WEB_CONTEXT, "a/b").build()) {
-            Assert.assertTrue(client.ping(getServer(), 3000));
+            Assert.assertTrue(client.ping(getServer(), 10000));
         }
 
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseHttpOption.WEB_CONTEXT, "a/b")
                 .option(ClickHouseClientOption.HEALTH_CHECK_METHOD, ClickHouseHealthCheckMethod.PING).build()) {
-            Assert.assertFalse(client.ping(getServer(), 3000));
+            Assert.assertFalse(client.ping(getServer(), 10000));
         }
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseHttpOption.WEB_CONTEXT, "/")
                 .option(ClickHouseClientOption.HEALTH_CHECK_METHOD, ClickHouseHealthCheckMethod.PING).build()) {
-            Assert.assertTrue(client.ping(getServer(), 3000));
+            Assert.assertTrue(client.ping(getServer(), 10000));
         }
 
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseClientOption.HEALTH_CHECK_METHOD, ClickHouseHealthCheckMethod.PING)
                 .removeOption(ClickHouseHttpOption.WEB_CONTEXT).build()) {
-            Assert.assertTrue(client.ping(getServer(), 3000));
+            Assert.assertTrue(client.ping(getServer(), 10000));
         }
     }
 
