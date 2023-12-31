@@ -941,6 +941,7 @@ public interface ClickHouseClient extends AutoCloseable {
      * @return true if the server is alive; false otherwise
      */
     default boolean ping(ClickHouseNode server, int timeout) {
+        log.debug("ping server [%s] timeout [%d]", server.getBaseUri(), timeout);
         if (server != null) {
             if (timeout < 1) {
                 timeout = server.config.getConnectionTimeout();
@@ -957,7 +958,7 @@ public interface ClickHouseClient extends AutoCloseable {
                     .format(ClickHouseFormat.TabSeparated)
                     .query("SELECT 1 FORMAT TabSeparated").execute()
                     .get(timeout, TimeUnit.MILLISECONDS)) {
-                log.debug("resp [%s]", resp);
+                log.debug("ping response [%s]", resp.getSummary().toString());
                 return resp != null;
             } catch (Exception e) {
                 log.error(e);
