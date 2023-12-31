@@ -239,6 +239,7 @@ public class HttpUrlConnectionImpl extends ClickHouseHttpConnection {
 
     @Override
     public boolean ping(int timeout) {
+        log.debug("HttpUrlConnectionImpl ping timeout: [%d]", timeout);
         String response = config.getStrOption(ClickHouseHttpOption.DEFAULT_RESPONSE);
         String url = null;
         HttpURLConnection c = null;
