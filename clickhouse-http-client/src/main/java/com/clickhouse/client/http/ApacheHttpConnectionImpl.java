@@ -248,6 +248,7 @@ public class ApacheHttpConnectionImpl extends ClickHouseHttpConnection {
 
     @Override
     public boolean ping(int timeout) {
+        log.debug("ApacheHttpConnectionImpl ping timeout: [%d]", timeout);
         String url = getBaseUrl().concat("ping");
         HttpGet ping = new HttpGet(url);
 
