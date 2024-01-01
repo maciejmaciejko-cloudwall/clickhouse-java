@@ -43,6 +43,8 @@ import com.clickhouse.data.value.UnsignedInteger;
 import com.clickhouse.data.value.UnsignedLong;
 import com.clickhouse.data.value.UnsignedShort;
 
+import com.clickhouse.logging.Logger;
+import com.clickhouse.logging.LoggerFactory;
 import org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream;
 import org.testng.Assert;
 import org.testng.SkipException;
@@ -86,6 +88,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public abstract class ClientIntegrationTest extends BaseIntegrationTest {
+
+    public Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
     protected void checkRowCount(String queryOrTableName, int expectedRowCount) throws ClickHouseException {
         try (ClickHouseClient client = getClient()) {
             checkRowCount(newRequest(client, getServer()).format(ClickHouseFormat.RowBinaryWithNamesAndTypes),

@@ -210,29 +210,32 @@ public class ClickHouseHttpClientTest extends ClientIntegrationTest {
 
     @Test(groups = "integration")
     public void testPing() {
+        log.debug("HTTP testPing");
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP)).build()) {
             Assert.assertTrue(client.ping(getServer(), 10000));
         }
+        log.debug("HTTP testPing a/b");
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseHttpOption.WEB_CONTEXT, "a/b").build()) {
             Assert.assertTrue(client.ping(getServer(), 10000));
         }
-
+        log.debug("HTTP testPing a/b health");
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseHttpOption.WEB_CONTEXT, "a/b")
                 .option(ClickHouseClientOption.HEALTH_CHECK_METHOD, ClickHouseHealthCheckMethod.PING).build()) {
             Assert.assertFalse(client.ping(getServer(), 10000));
         }
+        log.debug("HTTP testPing / health");
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseHttpOption.WEB_CONTEXT, "/")
                 .option(ClickHouseClientOption.HEALTH_CHECK_METHOD, ClickHouseHealthCheckMethod.PING).build()) {
             Assert.assertTrue(client.ping(getServer(), 10000));
         }
-
+        log.debug("HTTP testPing remove web context health");
         try (ClickHouseClient client = ClickHouseClient.builder().options(getClientOptions())
                 .nodeSelector(ClickHouseNodeSelector.of(ClickHouseProtocol.HTTP))
                 .option(ClickHouseClientOption.HEALTH_CHECK_METHOD, ClickHouseHealthCheckMethod.PING)
