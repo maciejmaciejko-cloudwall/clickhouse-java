@@ -956,7 +956,7 @@ public interface ClickHouseClient extends AutoCloseable {
                     .option(ClickHouseClientOption.BUFFER_SIZE, 8) // actually 4 bytes should be enough
                     .option(ClickHouseClientOption.MAX_QUEUED_BUFFERS, 1) // enough with only one buffer
                     .format(ClickHouseFormat.TabSeparated)
-                    .query("SELECT 1 FORMAT TabSeparated").execute()
+                    .query("§").execute()
                     .get(timeout, TimeUnit.MILLISECONDS)) {
                 log.debug("ping response [%s]", resp.getSummary().toString());
                 return resp != null;
