@@ -34,7 +34,7 @@ public final class ClickHouseHttpConnectionFactory {
             connection = new HttpUrlConnectionImpl(server, request, executor);
         }
         try {
-            connection.authorize();
+            connection.initialize();
         } catch (GSSException e) {
             throw new RuntimeException("Can not perform GSS authorization", e);
         }
