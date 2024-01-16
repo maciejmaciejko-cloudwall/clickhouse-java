@@ -17,7 +17,6 @@ public final class ClickHouseHttpConnectionFactory {
             ExecutorService executor) throws IOException {
         HttpConnectionProvider provider = request.getConfig().getOption(ClickHouseHttpOption.CONNECTION_PROVIDER,
                 HttpConnectionProvider.class);
-        ClickHouseHttpConnection connection = null;
         if (provider == HttpConnectionProvider.APACHE_HTTP_CLIENT) {
             try {
                 return new ApacheHttpConnectionImpl(server, request, executor);
