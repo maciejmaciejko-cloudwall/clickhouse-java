@@ -12,12 +12,10 @@ import com.clickhouse.data.ClickHouseChecker;
 public class ClickHouseCredentials implements Serializable {
     private static final long serialVersionUID = -8883041793709590486L;
 
+    private final String accessToken;
     private final String userName;
     private final String password;
     // TODO sslCert
-
-    private final boolean useGss;
-    private String accessToken;
 
     /**
      * Create credentials from access token.
@@ -40,10 +38,6 @@ public class ClickHouseCredentials implements Serializable {
         return new ClickHouseCredentials(userName, password);
     }
 
-    public static ClickHouseCredentials fromGss() {
-        return new ClickHouseCredentials();
-    }
-
     /**
      * Construct credentials object using access token.
      *
@@ -51,7 +45,6 @@ public class ClickHouseCredentials implements Serializable {
      */
     protected ClickHouseCredentials(String accessToken) {
         this.accessToken = ClickHouseChecker.nonNull(accessToken, "accessToken");
-        this.useGss = false;
         this.userName = null;
         this.password = null;
     }
@@ -67,11 +60,9 @@ public class ClickHouseCredentials implements Serializable {
 
         this.userName = ClickHouseChecker.nonBlank(userName, "userName");
         this.password = password != null ? password : "";
-        this.useGss = false;
     }
 
     protected ClickHouseCredentials() {
-        this.useGss = true;
         this.userName = null;
         this.password = null;
         this.accessToken = null;
@@ -79,10 +70,6 @@ public class ClickHouseCredentials implements Serializable {
 
     public boolean useAccessToken() {
         return accessToken != null;
-    }
-
-    public boolean useGss() {
-        return useGss;
     }
 
     /**
@@ -95,10 +82,6 @@ public class ClickHouseCredentials implements Serializable {
             throw new IllegalStateException("No access token specified, please use user name and password instead.");
         }
         return this.accessToken;
-    }
-
-    public void setAccessToken(String token) {
-        this.accessToken = token;
     }
 
     /**
@@ -127,7 +110,7 @@ public class ClickHouseCredentials implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(accessToken, userName, password, useGss);
+        return Objects.hash(accessToken, userName, password);
     }
 
     @Override
@@ -143,7 +126,6 @@ public class ClickHouseCredentials implements Serializable {
         ClickHouseCredentials c = (ClickHouseCredentials) obj;
         return Objects.equals(accessToken, c.accessToken) 
                 && Objects.equals(userName, c.userName)
-                && Objects.equals(password, c.password)
-                && Objects.equals(useGss, c.useGss);
+                && Objects.equals(password, c.password);
     }
 }

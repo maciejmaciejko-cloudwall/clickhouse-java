@@ -243,6 +243,7 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
                 && config.getRequestCompressAlgorithm() != ClickHouseCompression.LZ4) {
             map.put("content-encoding", config.getRequestCompressAlgorithm().encoding());
         }
+        overwriteGss(map, config, server);
         return map;
     }
 
@@ -356,7 +357,6 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
 
     protected final ClickHouseConfig config;
     protected final String url;
-    protected Map<String, String> defaultHeaders;
 
     protected ClickHouseHttpConnection(ClickHouseNode server, ClickHouseRequest<?> request) {
         if (server == null || request == null) {
@@ -371,34 +371,8 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         this.url = buildUrl(server.getBaseUri(), request);
     }
 
-    abstract protected String negotiateGssToken(String token) throws IOException;
-
-    private String doNegotiateGssToken(String token) {
-        try {
-            return negotiateGssToken(token);
-        } catch (IOException e) {
-            throw new RuntimeException("Can not negotiate GSS token", e);
-        }
-    }
-
-    protected void initialize() {
-        try {
-            doAuthorize();
-        } catch (GSSException e) {
-            throw new RuntimeException("Can not authorize using GSS", e);
-        }
-        this.defaultHeaders = Collections.unmodifiableMap(createDefaultHeaders(config, server, getUserAgent()));
-    }
-
-    private void doAuthorize() throws GSSException {
-        ClickHouseCredentials credentials = server.getCredentials(config);
-        if(credentials.useGss() && !credentials.useAccessToken()) {
-            GssAuthorizer authorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
-            do {
-                authorizer.negotiate(this::doNegotiateGssToken);
-            } while (!authorizer.isEstablished());
-            credentials.setAccessToken(authorizer.getToken());
-        }
+    protected Map<String, String> getDefaultHeaders() {
+        return Collections.unmodifiableMap(createDefaultHeaders(config, server, getUserAgent()));
     }
 
     protected void closeQuietly() {
@@ -449,13 +423,13 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
      */
     protected Map<String, String> mergeHeaders(Map<String, String> requestHeaders) {
         if (requestHeaders == null || requestHeaders.isEmpty()) {
-            return defaultHeaders;
+            return getDefaultHeaders();
         } else if (isReusable()) {
-            return requestHeaders;
+            return overwriteGss(requestHeaders, config, server);
         }
 
         Map<String, String> merged = new LinkedHashMap<>();
-        merged.putAll(defaultHeaders);
+        merged.putAll(getDefaultHeaders());
         for (Entry<String, String> header : requestHeaders.entrySet()) {
             String name = header.getKey().toLowerCase(Locale.ROOT);
             String value = header.getValue();
@@ -466,6 +440,20 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
             }
         }
         return merged;
+    }
+
+    private static Map<String, String> overwriteGss(Map<String, String> headers, ClickHouseConfig config, ClickHouseNode server) {
+        if (config.isGssEnabled()) {
+            if (config.isGssEnabled()) {
+                try {
+                    GssAuthorizer gssAuthorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
+                    headers.put("authorization", "Negotiate " + gssAuthorizer.getToken());
+                } catch (GSSException e) {
+                    throw new RuntimeException("Can not generate GSS SPNEGO token", e);
+                }
+            }
+        }
+        return headers;
     }
 
     /**

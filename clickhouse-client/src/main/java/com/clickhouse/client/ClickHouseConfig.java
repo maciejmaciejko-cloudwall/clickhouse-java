@@ -372,12 +372,8 @@ public class ClickHouseConfig implements ClickHouseDataConfig {
         this.timeZoneForDate = this.useServerTimeZoneForDates ? this.useTimeZone : null;
 
         if (credentials == null) {
-            if (gssEnabled) {
-                this.credentials = ClickHouseCredentials.fromGss();
-            } else {
-                this.credentials = ClickHouseCredentials.fromUserAndPassword(getStrOption(ClickHouseDefaults.USER),
-                        getStrOption(ClickHouseDefaults.PASSWORD));
-            }
+            this.credentials = ClickHouseCredentials.fromUserAndPassword(getStrOption(ClickHouseDefaults.USER),
+                    getStrOption(ClickHouseDefaults.PASSWORD));
         } else {
             this.credentials = credentials;
         }
