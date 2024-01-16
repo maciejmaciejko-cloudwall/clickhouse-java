@@ -218,7 +218,9 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         map.put("user-agent", !ClickHouseChecker.isNullOrEmpty(userAgent) ? userAgent : config.getClientName());
 
         ClickHouseCredentials credentials = server.getCredentials(config);
-        if (credentials.useAccessToken()) {
+        if (config.isGssEnabled()) {
+            setGssAuthHeader(map, config, server);
+        } else if (credentials.useAccessToken()) {
             // TODO check if auth-scheme is available and supported
             map.put("authorization", credentials.getAccessToken());
         } else if (!hasAuthorizationHeader) {
@@ -243,7 +245,7 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
                 && config.getRequestCompressAlgorithm() != ClickHouseCompression.LZ4) {
             map.put("content-encoding", config.getRequestCompressAlgorithm().encoding());
         }
-        return overwriteGss(map, config, server);
+        return map;
     }
 
     protected static Proxy getProxy(ClickHouseConfig config) {
@@ -424,7 +426,7 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         if (requestHeaders == null || requestHeaders.isEmpty()) {
             return getDefaultHeaders();
         } else if (isReusable()) {
-            return overwriteGss(requestHeaders, config, server);
+            return setGssAuthHeader(requestHeaders, config, server);
         }
 
         Map<String, String> merged = new LinkedHashMap<>();
@@ -441,7 +443,7 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         return merged;
     }
 
-    private static Map<String, String> overwriteGss(Map<String, String> headers, ClickHouseConfig config, ClickHouseNode server) {
+    private static Map<String, String> setGssAuthHeader(Map<String, String> headers, ClickHouseConfig config, ClickHouseNode server) {
         if (config.isGssEnabled()) {
             try {
                 GssAuthorizer gssAuthorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
