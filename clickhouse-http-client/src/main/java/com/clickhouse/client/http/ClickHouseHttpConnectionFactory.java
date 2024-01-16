@@ -20,7 +20,7 @@ public final class ClickHouseHttpConnectionFactory {
         ClickHouseHttpConnection connection = null;
         if (provider == HttpConnectionProvider.APACHE_HTTP_CLIENT) {
             try {
-                connection = new ApacheHttpConnectionImpl(server, request, executor);
+                return new ApacheHttpConnectionImpl(server, request, executor);
             } catch (ExceptionInInitializerError | NoClassDefFoundError t) {
                 log.warn("Error when creating %s, fall back to HTTP_URL_CONNECTION", provider, t);
             }
@@ -28,11 +28,7 @@ public final class ClickHouseHttpConnectionFactory {
             log.warn("HTTP_CLIENT is only supported in JDK 11 or above, fall back to HTTP_URL_CONNECTION");
         }
 
-        if (connection == null) {
-            connection = new HttpUrlConnectionImpl(server, request, executor);
-        }
-        connection.initialize();
-        return connection;
+        return new HttpUrlConnectionImpl(server, request, executor);
     }
 
     private ClickHouseHttpConnectionFactory() {

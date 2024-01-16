@@ -243,8 +243,7 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
                 && config.getRequestCompressAlgorithm() != ClickHouseCompression.LZ4) {
             map.put("content-encoding", config.getRequestCompressAlgorithm().encoding());
         }
-        overwriteGss(map, config, server);
-        return map;
+        return overwriteGss(map, config, server);
     }
 
     protected static Proxy getProxy(ClickHouseConfig config) {
@@ -444,13 +443,11 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
 
     private static Map<String, String> overwriteGss(Map<String, String> headers, ClickHouseConfig config, ClickHouseNode server) {
         if (config.isGssEnabled()) {
-            if (config.isGssEnabled()) {
-                try {
-                    GssAuthorizer gssAuthorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
-                    headers.put("authorization", "Negotiate " + gssAuthorizer.getToken());
-                } catch (GSSException e) {
-                    throw new RuntimeException("Can not generate GSS SPNEGO token", e);
-                }
+            try {
+                GssAuthorizer gssAuthorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
+                headers.put("authorization", "Negotiate " + gssAuthorizer.getToken());
+            } catch (GSSException e) {
+                throw new RuntimeException("Can not generate GSS token", e);
             }
         }
         return headers;

@@ -20,19 +20,15 @@ public final class ClickHouseHttpConnectionFactory {
         ClickHouseHttpConnection connection = null;
         if (provider == HttpConnectionProvider.APACHE_HTTP_CLIENT) {
             try {
-                connection = new ApacheHttpConnectionImpl(server, request, executor);
+                return new ApacheHttpConnectionImpl(server, request, executor);
             } catch (ExceptionInInitializerError | NoClassDefFoundError t) {
                 log.warn("Error when creating %s, fall back to HTTP_URL_CONNECTION", provider, t);
             }
         } else if (provider == HttpConnectionProvider.HTTP_CLIENT) {
-            connection = new HttpClientConnectionImpl(server, request, executor);
+            return new HttpClientConnectionImpl(server, request, executor);
         }
 
-        if (connection == null) {
-            connection = new HttpUrlConnectionImpl(server, request, executor);
-        }
-        connection.initialize();
-        return connection;
+        return new HttpUrlConnectionImpl(server, request, executor);
     }
 
     private ClickHouseHttpConnectionFactory() {

@@ -13,6 +13,7 @@ public class ClickHouseCredentials implements Serializable {
     private static final long serialVersionUID = -8883041793709590486L;
 
     private final String accessToken;
+
     private final String userName;
     private final String password;
     // TODO sslCert
@@ -60,12 +61,6 @@ public class ClickHouseCredentials implements Serializable {
 
         this.userName = ClickHouseChecker.nonBlank(userName, "userName");
         this.password = password != null ? password : "";
-    }
-
-    protected ClickHouseCredentials() {
-        this.userName = null;
-        this.password = null;
-        this.accessToken = null;
     }
 
     public boolean useAccessToken() {
@@ -124,8 +119,7 @@ public class ClickHouseCredentials implements Serializable {
         }
 
         ClickHouseCredentials c = (ClickHouseCredentials) obj;
-        return Objects.equals(accessToken, c.accessToken) 
-                && Objects.equals(userName, c.userName)
+        return Objects.equals(accessToken, c.accessToken)  && Objects.equals(userName, c.userName)
                 && Objects.equals(password, c.password);
     }
 }
