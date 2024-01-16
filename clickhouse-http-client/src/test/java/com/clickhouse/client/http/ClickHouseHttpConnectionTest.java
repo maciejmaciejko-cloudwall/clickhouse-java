@@ -105,10 +105,12 @@ public class ClickHouseHttpConnectionTest {
         ClickHouseNode server = ClickHouseNode.builder().build();
         ClickHouseRequest<?> request = ClickHouseClient.newInstance().read(server);
         SimpleHttpConnection sc = new SimpleHttpConnection(server, request);
+        sc.initialize();
         Assert.assertTrue(!sc.defaultHeaders.isEmpty());
         Assert.assertEquals(sc.defaultHeaders, sc.mergeHeaders(null));
 
         sc = new SimpleHttpConnection(server, request.format(ClickHouseFormat.ArrowStream));
+        sc.initialize();
         Assert.assertTrue(!sc.defaultHeaders.isEmpty());
         Assert.assertEquals(sc.defaultHeaders, sc.mergeHeaders(null));
     }

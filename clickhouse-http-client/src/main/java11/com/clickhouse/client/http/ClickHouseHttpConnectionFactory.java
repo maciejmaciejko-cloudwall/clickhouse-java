@@ -3,8 +3,6 @@ package com.clickhouse.client.http;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-import org.ietf.jgss.GSSException;
-
 import com.clickhouse.client.ClickHouseNode;
 import com.clickhouse.client.ClickHouseRequest;
 import com.clickhouse.client.http.config.ClickHouseHttpOption;
@@ -33,11 +31,7 @@ public final class ClickHouseHttpConnectionFactory {
         if (connection == null) {
             connection = new HttpUrlConnectionImpl(server, request, executor);
         }
-        try {
-            connection.initialize();
-        } catch (GSSException e) {
-            throw new RuntimeException("Can not perform GSS authorization", e);
-        }
+        connection.initialize();
         return connection;
     }
 

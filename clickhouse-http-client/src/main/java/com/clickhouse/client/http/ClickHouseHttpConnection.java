@@ -381,7 +381,16 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         }
     }
 
-    protected void initialize() throws GSSException {
+    protected void initialize() {
+        try {
+            doAuthorize();
+        } catch (GSSException e) {
+            throw new RuntimeException("Can not authorize using GSS", e);
+        }
+        this.defaultHeaders = Collections.unmodifiableMap(createDefaultHeaders(config, server, getUserAgent()));
+    }
+
+    private void doAuthorize() throws GSSException {
         ClickHouseCredentials credentials = server.getCredentials(config);
         if(credentials.useGss() && !credentials.useAccessToken()) {
             GssAuthorizer authorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
@@ -390,7 +399,6 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
             } while (!authorizer.isEstablished());
             credentials.setAccessToken(authorizer.getToken());
         }
-        this.defaultHeaders = Collections.unmodifiableMap(createDefaultHeaders(config, server, getUserAgent()));
     }
 
     protected void closeQuietly() {
