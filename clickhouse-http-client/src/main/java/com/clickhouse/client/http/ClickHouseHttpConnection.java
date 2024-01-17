@@ -28,7 +28,7 @@ import com.clickhouse.client.ClickHouseRequest;
 import com.clickhouse.client.ClickHouseRequestManager;
 import com.clickhouse.client.config.ClickHouseClientOption;
 import com.clickhouse.client.config.ClickHouseProxyType;
-import com.clickhouse.client.gss.GssAuthorizer;
+import com.clickhouse.client.gss.GssAuthenticator;
 import com.clickhouse.client.http.config.ClickHouseHttpOption;
 import com.clickhouse.config.ClickHouseOption;
 import com.clickhouse.data.ClickHouseByteUtils;
@@ -217,8 +217,8 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         }
         map.put("user-agent", !ClickHouseChecker.isNullOrEmpty(userAgent) ? userAgent : config.getClientName());
 
-        ClickHouseCredentials credentials = server.getCredentials(config);
-        if (config.isGssEnabled()) {
+        ClickHouseCredentials credentials = getCredentials(config, server);
+        if (credentials.useGss()) {
             setGssAuthHeader(map, config, server);
         } else if (credentials.useAccessToken()) {
             // TODO check if auth-scheme is available and supported
@@ -246,6 +246,10 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
             map.put("content-encoding", config.getRequestCompressAlgorithm().encoding());
         }
         return map;
+    }
+
+    private static ClickHouseCredentials getCredentials(ClickHouseConfig config, ClickHouseNode server) {
+        return server.getCredentials(config);
     }
 
     protected static Proxy getProxy(ClickHouseConfig config) {
@@ -373,7 +377,7 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
     }
 
     protected Map<String, String> getDefaultHeaders() {
-        return Collections.unmodifiableMap(createDefaultHeaders(config, server, getUserAgent()));
+        return createDefaultHeaders(config, server, getUserAgent());
     }
 
     protected void closeQuietly() {
@@ -446,8 +450,9 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
     private static Map<String, String> setGssAuthHeader(Map<String, String> headers, ClickHouseConfig config, ClickHouseNode server) {
         if (config.isGssEnabled()) {
             try {
-                GssAuthorizer gssAuthorizer = new GssAuthorizer(config.getKerberosServerName(), server.getHost());
-                headers.put("authorization", "Negotiate " + gssAuthorizer.getToken());
+                String userName = getCredentials(config, server).getUserName();
+                GssAuthenticator gssAuthenticator = new GssAuthenticator(userName, config.getKerberosServerName(), server.getHost());
+                headers.put("authenticate", "Negotiate " + gssAuthenticator.getAuthToken());
             } catch (GSSException e) {
                 throw new RuntimeException("Can not generate GSS token", e);
             }
