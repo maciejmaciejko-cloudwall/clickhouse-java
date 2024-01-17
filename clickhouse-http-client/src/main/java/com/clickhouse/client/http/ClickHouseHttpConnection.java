@@ -28,7 +28,7 @@ import com.clickhouse.client.ClickHouseRequest;
 import com.clickhouse.client.ClickHouseRequestManager;
 import com.clickhouse.client.config.ClickHouseClientOption;
 import com.clickhouse.client.config.ClickHouseProxyType;
-import com.clickhouse.client.gss.GssAuthenticator;
+import com.clickhouse.client.gss.GssAuthorizator;
 import com.clickhouse.client.http.config.ClickHouseHttpOption;
 import com.clickhouse.config.ClickHouseOption;
 import com.clickhouse.data.ClickHouseByteUtils;
@@ -451,8 +451,8 @@ public abstract class ClickHouseHttpConnection implements AutoCloseable {
         if (config.isGssEnabled()) {
             try {
                 String userName = getCredentials(config, server).getUserName();
-                GssAuthenticator gssAuthenticator = new GssAuthenticator(userName, config.getKerberosServerName(), server.getHost());
-                headers.put("authenticate", "Negotiate " + gssAuthenticator.getAuthToken());
+                GssAuthorizator gssAuthorizator = new GssAuthorizator(userName, config.getKerberosServerName(), server.getHost());
+                headers.put("authorization", "Negotiate " + gssAuthorizator.getAuthToken());
             } catch (GSSException e) {
                 throw new RuntimeException("Can not generate GSS token", e);
             }

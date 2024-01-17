@@ -8,17 +8,16 @@ import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
 import org.ietf.jgss.Oid;
 
-public class GssAuthenticator {
+public class GssAuthorizator {
 
     private final String user;
     private final String serverName;
     private final String host;
 
-    public GssAuthenticator(String user, String serverName, String host) throws GSSException {
+    public GssAuthorizator(String user, String serverName, String host) throws GSSException {
         this.user = user;
         this.serverName = serverName;
         this.host = host;
-
     }
 
     public String getAuthToken() throws GSSException {
