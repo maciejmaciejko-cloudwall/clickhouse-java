@@ -10,7 +10,6 @@ import org.ietf.jgss.Oid;
 
 public class GssAuthenticator {
 
-    // private final GSSContext secContext;
     private final String user;
     private final String serverName;
     private final String host;
