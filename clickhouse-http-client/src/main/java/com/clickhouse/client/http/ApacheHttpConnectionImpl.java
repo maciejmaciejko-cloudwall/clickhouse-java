@@ -238,12 +238,6 @@ public class ApacheHttpConnectionImpl extends ClickHouseHttpConnection {
                 sql, data, tables);
         post.setEntity(postBody);
 
-        if (post.getHeaders() != null) {
-            for (Header h : post.getHeaders()) {
-                System.out.println("Header: " + h.getName() + " " + h.getValue());      // TODO debug code
-            }
-        }
-
         CloseableHttpResponse response = client.execute(post);
 
         checkResponse(config, response);
