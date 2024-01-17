@@ -28,6 +28,7 @@ public class GssAuthenticator {
         GSSName gssClientName = manager.createName(user, GSSName.NT_USER_NAME);
         GSSCredential clientCreds = manager.createCredential(gssClientName, 8 * 3600, krb5SpnegoOid, GSSCredential.INITIATE_ONLY);
         GSSContext secContext = manager.createContext(gssServerName, krb5SpnegoOid, clientCreds, GSSContext.DEFAULT_LIFETIME);
+        secContext.requestMutualAuth(true);
         return Base64.encodeBase64String(secContext.initSecContext(new byte[0], 0, 0));
     }
 }
