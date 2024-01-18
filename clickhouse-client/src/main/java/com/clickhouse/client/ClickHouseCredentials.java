@@ -82,7 +82,7 @@ public class ClickHouseCredentials implements Serializable {
         } 
         if (!useAccessToken()) {
             throw new IllegalStateException("No access token specified, please use user name and password instead.");
-        } 
+        }
         return this.accessToken;
     }
 
