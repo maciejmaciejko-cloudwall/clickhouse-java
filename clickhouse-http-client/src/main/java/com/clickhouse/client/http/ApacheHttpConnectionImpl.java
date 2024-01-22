@@ -57,7 +57,6 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -238,6 +237,7 @@ public class ApacheHttpConnectionImpl extends ClickHouseHttpConnection {
         ClickHouseHttpEntity postBody = new ClickHouseHttpEntity(config, contentType, contentEncoding, boundary,
                 sql, data, tables);
         post.setEntity(postBody);
+
         CloseableHttpResponse response = client.execute(post);
 
         checkResponse(config, response);
